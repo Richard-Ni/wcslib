@@ -403,13 +403,9 @@ else
     CFITSIO_INCDIRS="$with_cfitsioinc"
   fi
 
-  CFITSIO_INCDIRS="$CFITSIO_INCDIRS   \
-           /usr/local/cfitsio/include \
-           /local/cfitsio/include"
+  CFITSIO_INCDIRS="$CFITSIO_INCDIRS"
 
-  LIBDIRS="$LIBDIRS           \
-           /usr/local/cfitsio/lib \
-           /local/cfitsio/lib"
+  LIBDIRS="$LIBDIRS"
 fi
 
 AC_ARG_WITH([pgplot], [AS_HELP_STRING([--without-pgplot],
@@ -441,34 +437,12 @@ fi
 
 if test "x$with_cfitsio" != xno -o \
         "x$with_pgplot"  != xno ; then
-  LIBDIRS="$LIBDIRS           \
-           /usr/local/lib     \
-           /local/lib         \
-           /opt/local/lib     \
-           /opt/SUNWspro/lib  \
-           /sw/lib"
-
-  for LIBDIR in $LIBDIRS ; do
-    AC_CHECK_FILE([$LIBDIR], [LDFLAGS="$LDFLAGS -L$LIBDIR"], [continue])
-  done
-
-  # Generic include directories.
-  INCDIRS="/usr/local/include \
-           /local/include     \
-           /opt/local/include \
-           /sw/include        \
-           /local             \
-           /usr/include"
-
+  LIBDIRS="$LIBDIRS"
 
   # CFITSIO.
   if test "x$with_cfitsio" != xno ; then
     # Search for CFITSIO.
-    for INCDIR in $CFITSIO_INCDIRS $INCDIRS ; do
-      AC_CHECK_FILE([$INCDIR/cfitsio/fitsio.h],
-                    [CFITSIOINC="-I$INCDIR/cfitsio"; break])
-      AC_CHECK_FILE([$INCDIR/fitsio.h], [CFITSIOINC="-I$INCDIR"; break])
-    done
+    AC_CHECK_HEADERS(fitsio.h)
 
     AC_CHECK_LIB([socket],  [recv],   [CFITSIOLIB="-lsocket"], [], [$LIBS])
     AC_CHECK_LIB([cfitsio], [ffopen], [CFITSIOLIB="-lcfitsio $CFITSIOLIB"], [],
@@ -493,11 +467,7 @@ if test "x$with_cfitsio" != xno -o \
   # PGPLOT.
   if test "x$F77" != x -a "x$with_pgplot" != xno ; then
     # Search for PGPLOT.
-    for INCDIR in $PGPLOT_INCDIRS $INCDIRS ; do
-      AC_CHECK_FILE([$INCDIR/pgplot/cpgplot.h],
-                    [PGPLOTINC="-I$INCDIR/pgplot"; break])
-      AC_CHECK_FILE([$INCDIR/cpgplot.h], [PGPLOTINC="-I$INCDIR"; break])
-    done
+    AC_CHECK_HEADERS(cpgplot.h)
 
     # FLIBS (found above via AC_F77_LIBRARY_LDFLAGS) only helps if PGPLOT was
     # built using the same Fortran compiler that we are using here.
